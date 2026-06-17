@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GratisRadar – Gratis* im Supermarkt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red:#FF1E2D; --red-soft:#ffe6e8; --ink:#16131c; --muted:#8b8694;
+    --line:#efecf3; --card:#fff; --amber:#ffb020; --amber-soft:#fff2d6;
+    --green:#1fae6a; --radius:26px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{font-family:'Hanken Grotesk',system-ui,sans-serif;color:var(--ink);background:#d9d4e4;
+    display:flex;justify-content:center;
+    background-image:radial-gradient(120% 80% at 20% 0%, #f6eef2 0%, #efe9f4 45%, #e7e2f0 100%);}
+  .phone{width:100%;max-width:440px;min-height:100vh;position:relative;overflow-x:hidden;
+    background:radial-gradient(140% 60% at 80% -5%, #faf2f4 0%, #f3eef6 40%, #efeaf4 100%);padding-bottom:30px;}
+
+  .status{display:flex;justify-content:space-between;align-items:center;padding:14px 26px 4px;font-weight:700;font-size:15px}
+  .status .dots{display:flex;gap:6px;align-items:center}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:8px 22px 0}
+  .brandmark{display:flex;align-items:center;gap:9px;font-weight:900;font-size:21px;letter-spacing:-.02em}
+  .brandmark .radar{width:30px;height:30px;border-radius:10px;background:var(--red);display:grid;place-items:center;box-shadow:0 6px 16px rgba(255,30,45,.35)}
+  .brandmark .radar::after{content:"";width:9px;height:9px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px rgba(255,255,255,.35)}
+  .iconbtn{width:42px;height:42px;border-radius:14px;background:rgba(255,255,255,.7);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.8);display:grid;place-items:center;cursor:pointer;transition:.15s}
+  .iconbtn:active{transform:scale(.93)}
+  .topbar .icons{display:flex;gap:10px}
+
+  .hero{padding:18px 24px 6px}
+  .hello{color:var(--muted);font-weight:600;font-size:15px;margin-bottom:4px}
+  .hero h1{font-size:31px;line-height:1.05;font-weight:800;letter-spacing:-.03em}
+  .hero h1 em{color:var(--red);font-style:normal}
+  .statline{display:flex;gap:8px;align-items:center;margin-top:14px;flex-wrap:wrap}
+  .pill-stat{background:#fff;border:1px solid var(--line);border-radius:30px;padding:9px 14px;font-weight:700;font-size:13px;display:flex;align-items:center;gap:7px;box-shadow:0 4px 14px rgba(60,40,90,.05)}
+  .pill-stat b{color:var(--red)}
+  .dotlive{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1.8s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(31,174,106,.5)}70%{box-shadow:0 0 0 7px rgba(31,174,106,0)}100%{box-shadow:0 0 0 0 rgba(31,174,106,0)}}
+
+  .seclabel{display:flex;justify-content:space-between;align-items:baseline;padding:22px 24px 12px}
+  .seclabel h2{font-size:17px;font-weight:800;letter-spacing:-.02em}
+  .seclabel span{color:var(--muted);font-weight:600;font-size:13px}
+
+  /* icon tile (emoji) */
+  .ico{display:grid;place-items:center;border-radius:18px;line-height:1}
+
+  /* endet bald */
+  .hot{display:flex;gap:13px;overflow-x:auto;padding:0 24px 4px;scrollbar-width:none}
+  .hot::-webkit-scrollbar{display:none}
+  .hotcard{flex:0 0 auto;width:165px;background:#fff;border:1px solid var(--line);border-radius:22px;padding:12px;cursor:pointer;box-shadow:0 8px 22px rgba(60,40,90,.07);transition:.18s;position:relative;overflow:hidden}
+  .hotcard:active{transform:scale(.97)}
+  .hotcard::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:var(--red)}
+  .hotcard .ico{width:100%;height:80px;font-size:38px;margin-bottom:9px;border-radius:14px}
+  .hotcard h4{font-size:13px;font-weight:800;line-height:1.2;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:32px}
+  .cd{display:inline-flex;align-items:center;gap:5px;font-weight:800;font-size:12px;color:#fff;background:var(--red);border-radius:20px;padding:5px 10px}
+  .cd .live{width:6px;height:6px;border-radius:50%;background:#fff;animation:blink 1s steps(2) infinite}
+  @keyframes blink{50%{opacity:.3}}
+  .cd.soft{background:var(--red-soft);color:var(--red)}
+  .cd.grey{background:#f0edf5;color:var(--muted)}
+  .cd.grey .live{display:none}
+
+  /* retailer chips */
+  .brands{display:flex;gap:14px;overflow-x:auto;padding:0 24px 4px;scrollbar-width:none}
+  .brands::-webkit-scrollbar{display:none}
+  .brand{flex:0 0 auto;width:64px;text-align:center;cursor:pointer}
+  .brand .thumb{width:64px;height:64px;border-radius:20px;display:grid;place-items:center;box-shadow:0 6px 16px rgba(60,40,90,.1);transition:.18s;padding:6px;border:2px solid transparent}
+  .brand .thumb b{color:#fff;font-weight:900;font-size:12px;line-height:1.05;letter-spacing:-.01em}
+  .brand.active .thumb{border-color:#fff;box-shadow:0 0 0 3px var(--red),0 8px 18px rgba(255,30,45,.25)}
+  .brand:active .thumb{transform:scale(.94)}
+  .brand small{display:block;margin-top:7px;font-size:11px;font-weight:600;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .brand.active small{color:var(--ink)}
+
+  .filters{display:flex;gap:9px;overflow-x:auto;padding:4px 24px;scrollbar-width:none}
+  .filters::-webkit-scrollbar{display:none}
+  .fpill{flex:0 0 auto;border:1px solid var(--line);background:#fff;border-radius:30px;padding:10px 16px;font-weight:700;font-size:13px;color:var(--ink);cursor:pointer;transition:.15s}
+  .fpill.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .fpill:active{transform:scale(.95)}
+
+  .offers{display:flex;flex-direction:column;gap:14px;padding:6px 20px 10px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;display:flex;gap:14px;align-items:center;cursor:pointer;box-shadow:0 8px 22px rgba(60,40,90,.06);transition:.2s}
+  .card:active{transform:scale(.985)}
+  .card .ico{flex:0 0 80px;width:80px;height:80px;font-size:40px}
+  .card .body{flex:1;min-width:0}
+  .row1{display:flex;align-items:center;gap:7px;margin-bottom:6px;flex-wrap:wrap}
+  .tag{font-size:11px;font-weight:800;padding:4px 9px;border-radius:20px}
+  .tag.gratis{background:var(--red);color:#fff}
+  .tag.cashback{background:#f0edf5;color:#4a4556}
+  .tag.gewinnspiel{background:var(--amber-soft);color:#9a6a00}
+  .card h3{font-size:15px;font-weight:800;line-height:1.2;letter-spacing:-.01em;margin-bottom:7px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .amount{font-weight:900;font-size:14px;color:var(--ink)}
+  .amount.free{color:var(--red)}
+  .score{font-size:12px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:3px}
+  .score b{color:var(--ink)}
+  .empty{text-align:center;color:var(--muted);font-weight:600;padding:50px 24px;font-size:14px}
+
+  .foot{padding:14px 28px 10px;color:var(--muted);font-size:11px;line-height:1.5;text-align:center}
+
+  /* detail */
+  .detail{position:fixed;inset:0;z-index:50;background:#f3eef6;max-width:440px;margin:0 auto;overflow-y:auto;transform:translateX(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);-webkit-overflow-scrolling:touch}
+  .detail.open{transform:translateX(0)}
+  .dhero{position:relative;width:100%;aspect-ratio:16/10;display:grid;place-items:center;font-size:78px;line-height:1}
+  .dback{position:absolute;top:46px;left:18px;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.9);backdrop-filter:blur(8px);border:none;display:grid;place-items:center;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+  .dback:active{transform:scale(.92)}
+  .dcd{position:absolute;top:50px;right:18px}
+  .dsheet{background:#f3eef6;border-radius:28px 28px 0 0;margin-top:-26px;position:relative;padding:22px 22px 40px}
+  .drow1{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .dscore{margin-left:auto;font-size:13px;font-weight:700;color:var(--muted);display:flex;gap:4px}
+  .dscore b{color:var(--ink)}
+  .detail h1{font-size:23px;font-weight:800;line-height:1.12;letter-spacing:-.02em;margin-bottom:12px}
+  .damount{display:inline-block;font-weight:900;font-size:15px;color:#fff;background:var(--red);padding:7px 14px;border-radius:14px;margin-bottom:16px}
+  .damount.cb{background:var(--ink)}
+  .dlead{font-size:14px;line-height:1.55;color:#3a3640;margin-bottom:20px}
+  .block{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px 18px;margin-bottom:14px}
+  .block h5{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:12px}
+  .kv{display:flex;justify-content:space-between;gap:14px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .kv:last-child{border:none;padding-bottom:0}.kv:first-of-type{padding-top:0}
+  .kv span{color:var(--muted);font-weight:600}.kv b{font-weight:800;text-align:right}
+  .steps{list-style:none;counter-reset:s}
+  .steps li{counter-increment:s;position:relative;padding:0 0 14px 38px;font-size:14px;line-height:1.45}
+  .steps li:last-child{padding-bottom:0}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:-2px;width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;font-weight:800;font-size:13px;display:grid;place-items:center}
+  .steps li::after{content:"";position:absolute;left:13px;top:26px;bottom:6px;width:2px;background:var(--red-soft)}
+  .steps li:last-child::after{display:none}
+  .retailers{display:flex;gap:10px;flex-wrap:wrap}
+  .rchip{display:flex;align-items:center;gap:9px;background:#faf8fc;border:1px solid var(--line);border-radius:14px;padding:8px 14px 8px 8px;font-weight:700;font-size:13px}
+  .rchip .rl{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;color:#fff;font-weight:900;font-size:10px}
+  .prodlist{list-style:none;font-size:14px}
+  .prodlist li{padding:7px 0;border-bottom:1px solid var(--line);color:#3a3640;display:flex;gap:8px}
+  .prodlist li:last-child{border:none}
+  .prodlist li::before{content:"•";color:var(--red);font-weight:900}
+  .note{font-size:13px;line-height:1.5;color:#5a5560}
+  .cta{display:block;width:100%;text-align:center;background:var(--red);color:#fff;font-weight:800;font-size:16px;padding:17px;border-radius:18px;text-decoration:none;margin-top:6px;box-shadow:0 10px 24px rgba(255,30,45,.3)}
+  .cta:active{transform:scale(.98)}
+  .clink{display:block;text-align:center;color:var(--muted);font-weight:700;font-size:13px;text-decoration:none;margin-top:14px}
+  .disc{font-size:11px;color:var(--muted);line-height:1.5;margin-top:18px;text-align:center}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="status">
+    <span>9:41</span>
+    <div class="dots">
+      <svg width="18" height="12" viewBox="0 0 18 12"><g fill="#16131c"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></g></svg>
+      <svg width="17" height="12" viewBox="0 0 17 12" fill="#16131c"><path d="M8.5 2.5c2.3 0 4.4.9 6 2.4l1.4-1.5A12 12 0 0 0 8.5.4 12 12 0 0 0 .6 3.4L2 4.9A8.5 8.5 0 0 1 8.5 2.5Zm0 3.6c1.3 0 2.5.5 3.4 1.3l1.4-1.5a8 8 0 0 0-9.6 0l1.4 1.5a5 5 0 0 1 3.4-1.3Zm0 3.5L10.4 12 8.5 9.6 6.6 12l1.9-2.4Z"/></svg>
+      <svg width="26" height="12" viewBox="0 0 26 12"><rect x="0.5" y="0.5" width="22" height="11" rx="3" fill="none" stroke="#16131c" opacity=".4"/><rect x="2" y="2" width="18" height="8" rx="1.5" fill="#16131c"/><rect x="23.5" y="3.5" width="2" height="5" rx="1" fill="#16131c" opacity=".4"/></svg>
+    </div>
+  </div>
+
+  <div class="topbar">
+    <div class="brandmark"><span class="radar"></span>GratisRadar</div>
+    <div class="icons">
+      <div class="iconbtn" title="Karte"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16131c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+      <div class="iconbtn" title="Profil"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16131c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="hello">Guten Morgen 👋</div>
+    <h1>Hol dir alles, was <em>gratis*</em> im Supermarkt ist</h1>
+    <div class="statline">
+      <span class="pill-stat"><span class="dotlive"></span><b id="liveCount">28</b>&nbsp;Aktionen aktiv</span>
+      <span class="pill-stat">🧾 Bon hoch → Geld zurück</span>
+    </div>
+  </div>
+
+  <div class="seclabel"><h2>🔥 Endet bald</h2><span>Schnell sein!</span></div>
+  <div class="hot" id="hot"></div>
+
+  <div class="seclabel"><h2>Händler</h2><span id="brandCount"></span></div>
+  <div class="brands" id="brands"></div>
+
+  <div class="seclabel"><h2>Aktionen</h2><span id="offerCount"></span></div>
+  <div class="filters" id="filters">
+    <div class="fpill active" data-type="all">Alle</div>
+    <div class="fpill" data-type="gratis">🆓 Gratis testen</div>
+    <div class="fpill" data-type="cashback">💸 Cashback</div>
+    <div class="fpill" data-type="gewinnspiel">🎁 Gewinnspiel</div>
+  </div>
+  <div class="offers" id="offers"></div>
+
+  <div class="foot">
+    *Kein Produkt ist sofort kostenlos: Du kaufst es normal, lädst den Kassenbon hoch und bekommst den Kaufpreis erstattet. „Händler" = häufig dort gekauft – die meisten Aktionen gelten bei jedem teilnehmenden Einzelhändler. Alle Angaben ohne Gewähr.<br>Konzept GratisRadar
+  </div>
+</div>
+
+<div class="detail" id="detail"></div>
+
+<script>
+const R={
+  dm:{n:"dm",c:"#002C5F"}, rossmann:{n:"Rossmann",c:"#E2001A"}, mueller:{n:"Müller",c:"#F08700"},
+  edeka:{n:"EDEKA",c:"#1A4F9C"}, rewe:{n:"REWE",c:"#CC0000"}, lidl:{n:"Lidl",c:"#0050AA"},
+  aldi:{n:"ALDI",c:"#1E3A8A"}, kaufland:{n:"Kaufland",c:"#E10915"}, penny:{n:"Penny",c:"#D4021D"},
+  netto:{n:"Netto",c:"#E2001A"}
+};
+// e = emoji, cat = category (drives tile color)
+const CAT={beer:"#E8A317",water:"#3BA9E0",soft:"#E0563B",coffee:"#9C6B3F",sweet:"#CE6E9B",cheese:"#E0A93A",care:"#7C5CFF",food:"#56A85B",dairy:"#5E97DD",pet:"#A07A55"};
+
+let OFFERS=[
+ {b:"PURINA",t:"PURINA – 5 € Cashback ab 15 € Einkauf",type:"cashback",amt:"5 € Cashback",d:80,score:80,e:"🐾",cat:"pet",ret:["edeka","rewe","kaufland","netto"],qty:"PURINA für mind. 15 €",max:"5 €",desc:"Kaufe PURINA Tiernahrung im Aktionszeitraum für mindestens 15 € und lass dir 5 € zurückerstatten."},
+ {b:"Darbo",t:"Darbo Zuckerreduziert – 1,50 € Cashback",type:"cashback",amt:"1,50 €",d:110,score:85,e:"🍓",cat:"food",ret:["edeka","rewe"],qty:"1 Produkt",max:"1,50 €",desc:"Kaufe ein Darbo Zuckerreduziert Produkt, lade den Kassenbon hoch und erhalte 1,50 € zurück."},
+ {b:"GOURMET",t:"GOURMET Revelations – Geld zurück + Gewinnchance",type:"cashback",amt:"bis 6,58 €",d:95,score:85,e:"🐱",cat:"pet",ret:["edeka","rewe","kaufland"],lim:"noch ~1.879 Einlösungen",qty:"2 Produkte",max:"6,58 €",desc:"Kaufe zwei GOURMET Revelations Produkte, lade den Kassenbon hoch und erhalte bis zu 6,58 € zurück – dazu die Chance auf einen 100-€-home24-Gutschein."},
+ {b:"BLOCK HOUSE",t:"BLOCK HOUSE – 5 € Cashback ab 15 € Einkauf",type:"cashback",amt:"5 € Cashback",d:80,score:80,e:"🥩",cat:"food",ret:["edeka","rewe"],qty:"BLOCK HOUSE für mind. 15 €",max:"5 €",desc:"Kauf für mindestens 15 € BLOCK HOUSE Produkte, reiche deinen Kassenbon ein und erhalte 5 € Cashback aufs Konto."},
+ {b:"Rockstar",t:"Rockstar Mocktails gratis testen",type:"gratis",amt:"bis 1,19 €",d:261,score:70,e:"🍹",cat:"soft",ret:["edeka","kaufland","netto"],proof:"Aktionscode (Dosenlasche)",qty:"1 Dose",max:"1,19 €",desc:"Gib den Code von der Lasche deiner Rockstar Mocktails Dose ein, fülle das Formular aus und erhalte bis zu 1,19 € zurück."},
+ {b:"WHISKAS",t:"WHISKAS – Schnurren oder Geld zurück",type:"cashback",amt:"bis 5 €",d:19,score:80,e:"🐈",cat:"pet",ret:["edeka","rewe","kaufland","netto"],qty:"1 Produkt",max:"5 €",desc:"Kaufe WHISKAS, registriere deinen Kassenbon und sichere dir einmalig bis zu 5 € zurück."},
+ {b:"Cillit Bang",t:"Cillit Bang gratis testen und Kaufpreis zurück",type:"gratis",amt:"100% zurück",free:1,h:11,score:65,e:"🧴",cat:"care",ret:["rossmann","dm","kaufland"],photo:1,desc:"Kauf ein Cillit Bang Aktionsprodukt, lade ein gemeinsames Foto von Kassenbon und Produkt hoch und erhalte den Kaufpreis zurück."},
+ {b:"Bad Liebenwerda",t:"Bad Liebenwerda Limette-Minze gratis testen",type:"gratis",amt:"100% zurück",free:1,d:45,score:100,e:"💧",cat:"water",ret:["edeka","rewe"],desc:"Kauf ein Bad Liebenwerda Mineralwasser + Limette-Minze 0,75 l, lade den Kassenbon hoch und erhalte den Kaufpreis zurück."},
+ {b:"VITA COLA",t:"VITA COLA gratis testen",type:"gratis",amt:"100% zurück",free:1,d:14,score:85,e:"🥤",cat:"soft",ret:["edeka","kaufland","netto"],desc:"Kauf ein VITA COLA Produkt, lade den Kassenbon hoch und erhalte den Kaufpreis zurück."},
+ {b:"Wasa",t:"Wasa Crunchy Bites gratis testen",type:"gratis",amt:"bis 2,19 €",d:45,score:90,e:"🥨",cat:"food",ret:["rewe","edeka"],max:"2,19 €",desc:"Kauf ein Wasa Crunchy Bites Produkt, lade den Kassenbon hoch und erhalte den Kaufpreis zurück, bis zu 2,19 €."},
+ {b:"Desperados",t:"Desperados Tropical Daiquiri gratis testen",type:"gratis",amt:"bis 2,05 €",d:12,score:90,e:"🍺",cat:"beer",ret:["rewe","kaufland"],max:"2,05 €",desc:"Kauf ein Desperados Tropical Daiquiri Produkt, lade den Kassenbon hoch und erhalte den Kaufpreis zurück, bis zu 2,05 €."},
+ {b:"Monte",t:"Monte Eis – Gewinnspiel: Kaufpreis zurück",type:"gewinnspiel",amt:"Gewinnspiel",d:103,score:100,e:"🍫",cat:"sweet",ret:["edeka","rewe"],desc:"Mitmachen beim Monte Cashback-Gewinnspiel: jede Woche bekommen 200 Teilnehmer das Geld für ein Monte-Aktionsprodukt zurück."},
+ {b:"Wasa",t:"Wasa Selection gratis testen",type:"gratis",amt:"bis 2,49 €",d:45,score:90,e:"🥨",cat:"food",ret:["rewe","edeka"],max:"2,49 €",desc:"Probier Wasa Selection aus und lass dir den Kaufpreis für ein Produkt bis zu 2,49 € erstatten."},
+ {b:"Always",t:"Always Discreet Maxi gratis testen",type:"gratis",amt:"100% zurück",free:1,d:45,score:95,e:"🌸",cat:"care",ret:["dm","rossmann","mueller"],photo:1,desc:"Kaufe ein Always Discreet Maxi Aktionsprodukt, lade ein Foto von Produkt und Kassenbon hoch und erhalte den Kaufpreis zurück."},
+ {b:"Nescafé",t:"Nescafé frappé Eiskaffee gratis testen",type:"gratis",amt:"100% zurück",free:1,d:13,score:90,e:"☕",cat:"coffee",ret:["penny"],lim:"noch ~3.881 von 60.000",real:1,
+   period:"15.03.2026 – 30.06.2026",proof:"Nur Kassenbon",qty:"1 Produkt",limmax:"Kaufpreis (100%)",gesamt:"60.000",dauer:"42 Tage",
+   prods:["NESCAFÉ frappé Typ Eiskaffee, 275 g Dose"],extern:"https://www.nescafe.com/de/unsere-aktionen/frappe-gratis-testen",
+   notes:"Die Auszahlung erfolgt innerhalb von sechs Wochen nach erfolgreicher Prüfung per Banküberweisung. Die Aktion kann vorzeitig enden, sobald 60.000 Teilnahmen erreicht sind.",
+   desc:"Teste Nescafé frappé Typ Eiskaffee gratis und sichere dir 100 % Cashback. Kaufe im Aktionszeitraum bei einem beliebigen Einzelhändler eine 275 g Dose, fotografiere deinen Kassenbon und lade ihn auf der Aktionsseite hoch. Nach erfolgreicher Prüfung wird dir der gesamte Kaufpreis innerhalb von sechs Wochen per Überweisung erstattet."},
+ {b:"Granini",t:"Granini DIE LIMO – bis 1.111 € gewinnen",type:"gewinnspiel",amt:"bis 1.111 €",d:26,score:85,e:"🧃",cat:"soft",ret:["rewe","edeka"],desc:"Kaufe ein DIE LIMO von granini Produkt, lade den Kassenbon hoch und sichere dir mit etwas Glück einen Geldgewinn."},
+ {b:"o.b.",t:"o.b. Tampons – 3 € Geld-zurück",type:"cashback",amt:"bis 3 €",d:19,score:90,e:"🌷",cat:"care",ret:["dm","rossmann","mueller"],max:"3 €",desc:"Kaufe eine Packung o.b. Tampons (alle Größen und Saugstärken) und hol dir bis zu 3 € des Kaufpreises zurück."},
+ {b:"Ben's Original",t:"BEN'S ORIGINAL Street Food gratis testen",type:"gratis",amt:"100% zurück",free:1,d:47,score:80,e:"🍚",cat:"food",ret:["rewe","edeka","kaufland"],photo:1,desc:"Teste Ben's Streetfood, lade den Kassenbon mit Produktfoto hoch und erhalte den Kaufpreis für ein Produkt zurück."},
+ {b:"Estrella Damm",t:"Estrella Damm 2-für-1 Aktion",type:"cashback",amt:"2 für 1",d:19,score:90,e:"🍺",cat:"beer",ret:["rewe","edeka"],qty:"2 Sixpacks",desc:"Kauf zwei Estrella Damm Sixpacks und erhalte für eines dein Geld zurück."},
+ {b:"Hengstenberg",t:"Hengstenberg Streetfood Topping 2-für-1",type:"cashback",amt:"2 für 1",d:106,score:100,e:"🫙",cat:"food",ret:["edeka","rewe"],qty:"mind. 2 Produkte",desc:"Teste zwei Hengstenberg Streetfood Topping Mix Gläser und lass dir den Preis des günstigeren erstatten."},
+ {b:"Ferrero",t:"Ferrero Probierpreis – 1 € Cashback",type:"cashback",amt:"1 € / Pack",d:76,score:75,e:"🍫",cat:"sweet",ret:["lidl","aldi","kaufland"],photo:1,qty:"bis 4 Packungen",max:"1 € pro Packung",desc:"Kaufe bis zu vier Ferrero Aktionspackungen, lade Bon + Produktfoto hoch und lass dir 1 € pro Packung erstatten."},
+ {b:"Hengstenberg",t:"Hengstenberg CousCous- & BulgurSalat gratis",type:"gratis",amt:"100% zurück",free:1,d:14,score:100,e:"🥗",cat:"food",ret:["rewe","edeka"],desc:"Teste Hengstenberg Salate To Go und lass dir den Kaufpreis nach dem Hochladen des Kassenbons erstatten."},
+ {b:"Bud",t:"Anheuser-Busch Bud Geld-zurück",type:"gratis",amt:"100% zurück",free:1,d:33,score:100,e:"🍺",cat:"beer",ret:["rewe","kaufland"],desc:"Jetzt Bud Flasche, Dose oder Sixpack kaufen, Kassenbon einreichen und Geld zurück holen."},
+ {b:"Somat",t:"Somat Power Gel gratis testen",type:"gratis",amt:"bis 9,99 €",d:14,score:85,e:"🧼",cat:"care",ret:["rossmann","dm","kaufland"],photo:1,max:"9,99 €",desc:"Kauf ein Somat Gel mit „Gratis Testen\"-Sticker, reiche Kassenbon und Produktfoto ein und erhalte den Kaufpreis bis 9,99 € zurück."},
+ {b:"Tetesept",t:"Tetesept Melatonin Einschlaf-Spray gratis",type:"gratis",amt:"bis 7,99 €",d:14,score:75,e:"😴",cat:"care",ret:["dm","rossmann","mueller"],max:"7,99 €",desc:"Kaufe tetesept Melatonin Einschlaf-Spray, lade den Kassenbon hoch und lass dir den Kaufpreis bis 7,99 € erstatten."},
+ {b:"Cottonelle",t:"Cottonelle Feuchtes Toilettenpapier gratis",type:"gratis",amt:"bis 1,79 €",d:45,score:60,e:"🧻",cat:"care",ret:["dm","rossmann","kaufland"],max:"1,79 €",desc:"Kaufe Cottonelle Feuchtes Toilettenpapier, lade den Kassenbon hoch und lass dir bis zu 1,79 € erstatten."},
+ {b:"Milka",t:"Milka & OREO Eis – 2-für-1 Cashback",type:"cashback",amt:"2 für 1",d:47,score:90,e:"🍦",cat:"sweet",ret:["kaufland"],real:1,
+   period:"01.06.2026 – 02.08.2026",proof:"Nur Kassenbon",qty:"mind. 2 Produkte",limmax:"4,99 €",gesamt:"20.000",dauer:"42 Tage",
+   prods:["Milka Vanilla & Chocolate Sticks 3x90ml","Milka Strawberry Cheesecake Sticks","Milka Caramel Crunch Sticks","Oreo Sticks 3x90ml","Oreo Sandwiches 4x110ml","OREO Tub 425ml"],prodsmore:"+ 11 weitere Produkte",
+   extern:"https://www.milka-oreo-icecream-cashback.de/",
+   notes:"Die ersten 20.000 gültigen Teilnahmen erhalten den Kaufpreis des günstigeren Produkts erstattet, höchstens 4,99 €. Onlinekäufe sind erlaubt, Versandkosten werden nicht erstattet. Nicht mit anderen Aktionen kombinierbar.",
+   desc:"Kaufe im Aktionszeitraum mindestens zwei Milka und/oder OREO Eisprodukte und lade deinen Kaufbeleg auf der Aktionsseite hoch. Nach erfolgreicher Prüfung erhältst du den Kaufpreis des günstigeren Produkts zurück, höchstens 4,99 € pro Teilnahme."},
+ {b:"Volvic",t:"Volvic Vitamin+ – 2 für 1",type:"cashback",amt:"2 für 1",d:82,score:90,e:"💧",cat:"water",ret:["rewe","edeka"],qty:"2 Produkte",max:"3,00 €",desc:"Kaufe zwei Volvic Vitamin+ Produkte, lade den Kassenbon hoch und lass dir ein Produkt bis 3,00 € erstatten."},
+ {b:"Bergader",t:"Bergader 3-für-2 Cashback",type:"cashback",amt:"3 für 2",d:60,score:85,e:"🧀",cat:"cheese",ret:["edeka","rewe"],lim:"noch ~1.656 Einlösungen",qty:"mind. 3 Produkte",desc:"Kaufe mind. drei Bergader-Käseprodukte und erhalte eine Erstattung für das günstigste Produkt."},
+ {b:"NIVEA",t:"NIVEA Derma Control Clinical gratis testen",type:"gratis",amt:"100% zurück",free:1,d:5,score:85,e:"🧴",cat:"care",ret:["dm","rossmann","mueller"],photo:1,desc:"Teste NIVEA Derma Control Clinical Deo und lass dir den Kaufpreis nach Hochladen von Bon und Produktfoto erstatten."},
+ {b:"Schöfferhofer",t:"Schöfferhofer Grapefruit 0,0 % – 2 für 1",type:"cashback",amt:"2 für 1",d:19,score:85,e:"🍺",cat:"beer",ret:["rewe","edeka"],qty:"2 Sixpacks",max:"4,89 €",desc:"Kaufe zwei passende Schöfferhofer-Sixpacks, lade den Kassenbon hoch und lass dir ein Sixpack bis 4,89 € erstatten."},
+ {b:"Melitta",t:"Melitta Kaffeepads Cashback",type:"cashback",amt:"bis 3 €",d:288,score:90,e:"☕",cat:"coffee",ret:["edeka","rewe","kaufland"],qty:"mind. 2 Packungen",max:"3 €",desc:"Kaufe zwei oder mehr Melitta Kaffeepads und lass dir bis zu 3 € zurückerstatten."},
+ {b:"Jever",t:"Jever Fun 0,0 % – 50 % Cashback",type:"cashback",amt:"50 %",d:40,score:90,e:"🍺",cat:"beer",ret:["rewe","edeka"],max:"50 % des Kaufpreises",desc:"Hol dir 50 % Cashback auf deinen Kauf von Jever Fun 0,0 % zurück."},
+ {b:"Zott",t:"Zott Pure Joy gratis testen",type:"gratis",amt:"bis 1,98 €",d:76,score:50,e:"🥛",cat:"dairy",ret:["edeka","rewe"],qty:"bis 2 Produkte",max:"1,98 €",desc:"Kaufe bis zu zwei Zott Pure Joy Produkte, lade den Kassenbon hoch und sichere dir bis 1,98 € pro Teilnahme zurück."}
+];
+
+function prepare(){const NOW=Date.now();OFFERS.forEach((o,i)=>{o.id=i;o.endsAt=o.h!=null?NOW+o.h*3600e3:(o.d!=null?NOW+o.d*864e5:null);o.color=CAT[o.cat]||"#FF1E2D";});}
+
+function hexRgb(h){h=h.replace("#","");return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];}
+function tile(o){const[r,g,b]=hexRgb(o.color);return `background:linear-gradient(135deg,rgba(${r},${g},${b},.20),rgba(${r},${g},${b},.10))`;}
+const typeLabel={gratis:"Gratis testen",cashback:"Cashback",gewinnspiel:"Gewinnspiel"};
+
+let activeType="all", activeRet=null;
+
+function cdMarkup(o){
+  if(o.endsAt==null) return `<span class="cd grey">⏳ ${o.lim||'läuft'}</span>`;
+  const days=(o.endsAt-Date.now())/864e5;
+  if(days<=2) return `<span class="cd" data-ends="${o.endsAt}"><span class="live"></span><span class="cdt">–</span></span>`;
+  if(days<=7) return `<span class="cd soft" data-ends="${o.endsAt}"><span class="cdt">–</span></span>`;
+  return `<span class="cd grey" data-ends="${o.endsAt}"><span class="cdt">–</span></span>`;
+}
+function fmt(ms){
+  if(ms<=0) return "abgelaufen";
+  const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4),s=Math.floor(ms%6e4/1e3),z=n=>String(n).padStart(2,"0");
+  if(d>=7) return "Noch "+d+" Tage";
+  if(d>=2) return "Nur noch "+d+" Tage";
+  if(d>=1) return d+"T "+z(h)+":"+z(m)+":"+z(s);
+  return z(h)+":"+z(m)+":"+z(s);
+}
+function tick(){document.querySelectorAll("[data-ends]").forEach(el=>{const t=el.querySelector(".cdt");if(!t)return;t.textContent=(el.querySelector(".live")?"⏰ ":"⏳ ")+fmt(+el.dataset.ends-Date.now());});}
+
+function renderHot(){
+  const list=OFFERS.filter(o=>o.endsAt!=null&&o.endsAt-Date.now()<=8*864e5).sort((a,b)=>a.endsAt-b.endsAt);
+  document.getElementById("hot").innerHTML=list.map(o=>`
+    <div class="hotcard" data-id="${o.id}">
+      <div class="ico" style="${tile(o)}">${o.e}</div>
+      <h4>${o.t}</h4>${cdMarkup(o)}
+    </div>`).join("");
+}
+function renderBrands(){
+  const used=new Set();OFFERS.forEach(o=>o.ret.forEach(r=>used.add(r)));
+  const list=Object.keys(R).filter(k=>used.has(k));
+  document.getElementById("brandCount").textContent=list.length+" Händler";
+  document.getElementById("brands").innerHTML=list.map(k=>{const r=R[k];
+    return `<div class="brand ${activeRet===k?'active':''}" data-ret="${k}">
+      <div class="thumb" style="background:${r.c}"><b>${r.n}</b></div><small>${r.n}</small></div>`;}).join("");
+}
+function renderOffers(){
+  const list=OFFERS.filter(o=>(activeType==="all"||o.type===activeType)&&(!activeRet||o.ret.includes(activeRet)));
+  document.getElementById("offerCount").textContent=list.length+" gefunden";
+  const el=document.getElementById("offers");
+  if(!list.length){el.innerHTML=`<div class="empty">Keine Aktion gefunden.<br>Anderen Händler oder Filter probieren.</div>`;return;}
+  el.innerHTML=list.map(o=>`
+    <div class="card" data-id="${o.id}">
+      <div class="ico" style="${tile(o)}">${o.e}</div>
+      <div class="body">
+        <div class="row1"><span class="tag ${o.type}">${typeLabel[o.type]}</span></div>
+        <h3>${o.t}</h3>
+        <div class="meta"><span class="amount ${o.free?'free':''}">${o.amt}</span>${cdMarkup(o)}<span class="score">★ <b>${o.score}</b></span></div>
+      </div>
+    </div>`).join("");
+  tick();
+}
+
+function rchip(k){const r=R[k];return `<div class="rchip"><span class="rl" style="background:${r.c}">${r.n.slice(0,2)}</span>${r.n}</div>`;}
+function steps(o){const buy=o.qty||"1 Aktionsprodukt";const photo=o.photo?" zusammen mit einem Produktfoto":"";
+  return `<ol class="steps">
+    <li>Kaufe <b>${buy}</b> im Aktionszeitraum im Handel.</li>
+    <li>Fotografiere deinen Kassenbon${photo} – gut lesbar.</li>
+    <li>Lade den Beleg auf der Aktionsseite hoch und fülle das Formular vollständig aus.</li>
+    <li>Nach erfolgreicher Prüfung bekommst du den Betrag per Banküberweisung erstattet.</li></ol>`;}
+
+function openDetail(o){
+  const period=o.period||(o.endsAt!=null?"endet in "+fmt(o.endsAt-Date.now()):"siehe Aktionsseite");
+  const proof=o.proof||(o.photo?"Kassenbon + Produktfoto":"Nur Kassenbon");
+  const qty=o.qty||"1 Produkt", max=o.limmax||o.max||(o.free?"Kaufpreis (100%)":"siehe Bedingungen");
+  const dauer=o.dauer||"ca. 6 Wochen", gesamt=o.gesamt||(o.lim||"–");
+  const prods=o.prods||[o.b+" Aktionsprodukt"], extern=o.extern||("https://www.google.com/search?q="+encodeURIComponent(o.b+" Cashback Geld-zurück Aktion"));
+  const d=document.getElementById("detail");
+  d.innerHTML=`
+    <div class="dhero" style="${tile(o)}">${o.e}
+      <button class="dback" onclick="closeDetail()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16131c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <div class="dcd">${cdMarkup(o)}</div>
+    </div>
+    <div class="dsheet">
+      <div class="drow1"><span class="tag ${o.type}">${typeLabel[o.type]}</span><span class="dscore">★ <b>${o.score}</b>/100</span></div>
+      <h1>${o.t}</h1>
+      <span class="damount ${o.free?'':'cb'}">${o.amt}</span>
+      <p class="dlead">${o.desc}</p>
+      <div class="block"><h5>Eckdaten</h5>
+        <div class="kv"><span>Teilnahmezeitraum</span><b>${period}</b></div>
+        <div class="kv"><span>Nachweis</span><b>${proof}</b></div>
+        <div class="kv"><span>Teilnahmelimit</span><b>1 pro Person</b></div>
+        <div class="kv"><span>Kaufmenge</span><b>${qty}</b></div>
+        <div class="kv"><span>Max. Erstattung</span><b>${max}</b></div>
+        <div class="kv"><span>Einlöselimit gesamt</span><b>${gesamt}</b></div>
+      </div>
+      <div class="block"><h5>So funktioniert's</h5>${steps(o)}</div>
+      <div class="block"><h5>Teilnehmende Produkte</h5><ul class="prodlist">${prods.map(p=>`<li>${p}</li>`).join("")}</ul>${o.prodsmore?`<p class="note" style="margin-top:10px">${o.prodsmore}</p>`:``}</div>
+      <div class="block"><h5>Häufig gekauft bei</h5><div class="retailers">${o.ret.map(rchip).join("")}</div></div>
+      <div class="block"><h5>Auszahlung</h5>
+        <div class="kv"><span>Erstattung</span><b>Kaufpreiserstattung</b></div>
+        <div class="kv"><span>Auszahlungsart</span><b>Banküberweisung</b></div>
+        <div class="kv"><span>Auszahlungsdauer</span><b>${dauer}</b></div>
+      </div>
+      ${o.notes?`<div class="block"><h5>Besondere Hinweise</h5><p class="note">${o.notes}</p></div>`:``}
+      <a class="cta" href="${extern}" target="_blank" rel="noopener">Zur Aktion →</a>
+      <p class="disc">${o.real?'':'Hinweis: Eckdaten teils generisch; „Zur Aktion" führt zur Hersteller-Suche, bis der exakte Aktions-Link hinterlegt ist. '}Verbindliche Bedingungen &amp; Fristen immer auf der Aktionsseite prüfen. Angaben ohne Gewähr.</p>
+    </div>`;
+  requestAnimationFrame(()=>d.classList.add("open"));
+  document.body.style.overflow="hidden";tick();
+}
+function closeDetail(){document.getElementById("detail").classList.remove("open");document.body.style.overflow="";}
+window.closeDetail=closeDetail;
+
+document.getElementById("filters").querySelectorAll(".fpill").forEach(p=>p.onclick=()=>{
+  document.querySelectorAll(".fpill").forEach(x=>x.classList.remove("active"));p.classList.add("active");activeType=p.dataset.type;renderOffers();});
+document.body.addEventListener("click",e=>{
+  const br=e.target.closest(".brand");if(br){const k=br.dataset.ret;activeRet=activeRet===k?null:k;renderBrands();renderOffers();return;}
+  const cd=e.target.closest(".card,.hotcard");if(cd){openDetail(OFFERS[+cd.dataset.id]);}});
+
+function boot(){prepare();document.getElementById("liveCount").textContent=OFFERS.length;renderHot();renderBrands();renderOffers();setInterval(tick,1000);}
+// Lädt offers.json (vom Scraper), sonst die eingebauten Beispieldaten. Auf file:// schlägt fetch fehl → Fallback.
+fetch("offers.json",{cache:"no-store"}).then(r=>r.ok?r.json():Promise.reject()).then(d=>{if(Array.isArray(d)&&d.length)OFFERS=d;}).catch(()=>{}).finally(boot);
+</script>
+</body>
+</html>
