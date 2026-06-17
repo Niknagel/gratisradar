@@ -33,9 +33,11 @@
   .topbar .icons{display:flex;gap:10px}
 
   .hero{padding:18px 24px 6px}
-  .hello{color:var(--muted);font-weight:600;font-size:15px;margin-bottom:4px}
-  .hero h1{font-size:31px;line-height:1.05;font-weight:800;letter-spacing:-.03em}
-  .hero h1 em{color:var(--red);font-style:normal}
+  .hello{color:var(--muted);font-weight:600;font-size:15px;margin-bottom:6px}
+  .savelabel{color:var(--muted);font-weight:600;font-size:15px}
+  .savebig{font-size:54px;font-weight:900;letter-spacing:-.035em;color:var(--red);line-height:.95;margin:2px 0 8px}
+  .savesub{font-size:15px;font-weight:600;color:var(--ink);line-height:1.3}
+  .savesub b{color:var(--red);font-weight:800}
   .statline{display:flex;gap:8px;align-items:center;margin-top:14px;flex-wrap:wrap}
   .pill-stat{background:#fff;border:1px solid var(--line);border-radius:30px;padding:9px 14px;font-weight:700;font-size:13px;display:flex;align-items:center;gap:7px;box-shadow:0 4px 14px rgba(60,40,90,.05)}
   .pill-stat b{color:var(--red)}
@@ -56,7 +58,9 @@
   .hotcard:active{transform:scale(.97)}
   .hotcard::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:var(--red)}
   .hotcard .ico{width:100%;height:80px;font-size:38px;margin-bottom:9px;border-radius:14px}
-  .hotcard h4{font-size:13px;font-weight:800;line-height:1.2;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:32px}
+  .hotcard h4{font-size:12px;font-weight:700;line-height:1.2;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:29px;color:#46424e}
+  .hprice{font-size:18px;font-weight:900;letter-spacing:-.02em;margin-bottom:8px;color:var(--ink)}
+  .hprice.free{color:var(--red)}
   .cd{display:inline-flex;align-items:center;gap:5px;font-weight:800;font-size:12px;color:#fff;background:var(--red);border-radius:20px;padding:5px 10px}
   .cd .live{width:6px;height:6px;border-radius:50%;background:#fff;animation:blink 1s steps(2) infinite}
   @keyframes blink{50%{opacity:.3}}
@@ -91,10 +95,12 @@
   .tag.gratis{background:var(--red);color:#fff}
   .tag.cashback{background:#f0edf5;color:#4a4556}
   .tag.gewinnspiel{background:var(--amber-soft);color:#9a6a00}
-  .card h3{font-size:15px;font-weight:800;line-height:1.2;letter-spacing:-.01em;margin-bottom:7px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-  .amount{font-weight:900;font-size:14px;color:var(--ink)}
+  .card h3{font-size:15px;font-weight:700;line-height:1.2;letter-spacing:-.01em;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:#46424e}
+  .priceline{display:flex;align-items:baseline;gap:6px;margin-bottom:6px}
+  .amount{font-weight:900;font-size:22px;letter-spacing:-.03em;color:var(--ink);line-height:1}
   .amount.free{color:var(--red)}
+  .amount small{font-size:12px;font-weight:700;color:var(--muted)}
+  .meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
   .score{font-size:12px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:3px}
   .score b{color:var(--ink)}
   .empty{text-align:center;color:var(--muted);font-weight:600;padding:50px 24px;font-size:14px}
@@ -162,9 +168,11 @@
 
   <div class="hero">
     <div class="hello">Guten Morgen 👋</div>
-    <h1>Hol dir alles, was <em>gratis*</em> im Supermarkt ist</h1>
+    <div class="savelabel">Gerade kannst du dir bis zu</div>
+    <div class="savebig" id="saveTotal">–</div>
+    <div class="savesub">zurückholen — über <b id="liveCount">–</b> Aktionen, davon <b id="freeCount">–</b> komplett gratis*</div>
     <div class="statline">
-      <span class="pill-stat"><span class="dotlive"></span><b id="liveCount">28</b>&nbsp;Aktionen aktiv</span>
+      <span class="pill-stat"><span class="dotlive"></span>Live aktualisiert</span>
       <span class="pill-stat">🧾 Bon hoch → Geld zurück</span>
     </div>
   </div>
@@ -185,7 +193,7 @@
   <div class="offers" id="offers"></div>
 
   <div class="foot">
-    *Kein Produkt ist sofort kostenlos: Du kaufst es normal, lädst den Kassenbon hoch und bekommst den Kaufpreis erstattet. „Händler" = häufig dort gekauft – die meisten Aktionen gelten bei jedem teilnehmenden Einzelhändler. Alle Angaben ohne Gewähr.<br>Konzept GratisRadar
+    *Kein Produkt ist sofort kostenlos: Du kaufst es normal, lädst den Kassenbon hoch und bekommst den Kaufpreis erstattet. Die Gesamtsumme ist eine Schätzung – bei „100 %", „2 für 1" und „50 %" mit typischen Produktpreisen gerechnet. „Händler" = häufig dort gekauft. Alle Angaben ohne Gewähr.<br>Konzept GratisRadar
   </div>
 </div>
 
@@ -253,6 +261,26 @@ function hexRgb(h){h=h.replace("#","");return [parseInt(h.slice(0,2),16),parseIn
 function tile(o){const[r,g,b]=hexRgb(o.color);return `background:linear-gradient(135deg,rgba(${r},${g},${b},.20),rgba(${r},${g},${b},.10))`;}
 const typeLabel={gratis:"Gratis testen",cashback:"Cashback",gewinnspiel:"Gewinnspiel"};
 
+// geschätzte typische Produktpreise je Kategorie (für 100%/2für1/50%-Aktionen ohne festen €-Betrag)
+const CATPRICE={beer:6,water:1.5,soft:1.5,coffee:5,sweet:3,cheese:4,care:5,food:3,dairy:1.5,pet:6};
+function euro(s){if(!s)return null;const m=String(s).match(/(\d[\d.,]*)\s*€/);if(!m)return null;let n=m[1];
+  if(n.includes(",")) n=n.replace(/\./g,"").replace(",","."); else if(/\.\d{3}\b/.test(n)) n=n.replace(/\./g,"");
+  const v=parseFloat(n);return isNaN(v)?null:v;}
+function valueOf(o){
+  if(o.type==="gewinnspiel") return 0;            // Gewinnchance, kein sicheres Sparen
+  let v=euro(o.max)||euro(o.amt); if(v) return v; // fester €-Betrag
+  const base=CATPRICE[o.cat]||3;
+  if(/50\s*%/.test(o.amt)) return base/2;
+  return base;                                     // 100% / 2für1 / 3für2 -> ~Produktpreis
+}
+function fmtEur(n){return (n>=100?Math.round(n):Math.round(n)).toLocaleString("de-DE")+" €";}
+function updateStats(){
+  const total=OFFERS.reduce((s,o)=>s+valueOf(o),0);
+  document.getElementById("saveTotal").textContent="~"+fmtEur(total);
+  document.getElementById("liveCount").textContent=OFFERS.length;
+  document.getElementById("freeCount").textContent=OFFERS.filter(o=>o.type==="gratis").length;
+}
+
 let activeType="all", activeRet=null;
 
 function cdMarkup(o){
@@ -277,7 +305,9 @@ function renderHot(){
   document.getElementById("hot").innerHTML=list.map(o=>`
     <div class="hotcard" data-id="${o.id}">
       <div class="ico" style="${tile(o)}">${o.e}</div>
-      <h4>${o.t}</h4>${cdMarkup(o)}
+      <h4>${o.t}</h4>
+      <div class="hprice ${o.free?'free':''}">${o.amt}</div>
+      ${cdMarkup(o)}
     </div>`).join("");
 }
 function renderBrands(){
@@ -299,7 +329,8 @@ function renderOffers(){
       <div class="body">
         <div class="row1"><span class="tag ${o.type}">${typeLabel[o.type]}</span></div>
         <h3>${o.t}</h3>
-        <div class="meta"><span class="amount ${o.free?'free':''}">${o.amt}</span>${cdMarkup(o)}<span class="score">★ <b>${o.score}</b></span></div>
+        <div class="priceline"><span class="amount ${o.free?'free':''}">${o.amt}</span><small>${o.free?'geschenkt':'zurück'}</small></div>
+        <div class="meta">${cdMarkup(o)}<span class="score">★ <b>${o.score}</b></span></div>
       </div>
     </div>`).join("");
   tick();
@@ -362,7 +393,7 @@ document.body.addEventListener("click",e=>{
   const br=e.target.closest(".brand");if(br){const k=br.dataset.ret;activeRet=activeRet===k?null:k;renderBrands();renderOffers();return;}
   const cd=e.target.closest(".card,.hotcard");if(cd){openDetail(OFFERS[+cd.dataset.id]);}});
 
-function boot(){prepare();document.getElementById("liveCount").textContent=OFFERS.length;renderHot();renderBrands();renderOffers();setInterval(tick,1000);}
+function boot(){prepare();updateStats();renderHot();renderBrands();renderOffers();setInterval(tick,1000);}
 // Lädt offers.json (vom Scraper), sonst die eingebauten Beispieldaten. Auf file:// schlägt fetch fehl → Fallback.
 fetch("offers.json",{cache:"no-store"}).then(r=>r.ok?r.json():Promise.reject()).then(d=>{if(Array.isArray(d)&&d.length)OFFERS=d;}).catch(()=>{}).finally(boot);
 </script>
