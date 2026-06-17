@@ -94,32 +94,26 @@ def get(url):
     return r.text
 
 
+STOP = {"cashback-apps", "impressum", "datenschutz", "kontakt", "hilfe",
+        "kalender", "login", "register", "tipps", "startseite",
+        "nuetzliche-tipps-fuer-cashback-geld-zurueck-aktionen"}
+
+
 def collect_slugs():
-    """Sammelt die Slugs aller aktiven Aktionen über die Übersichtsseiten."""
+    """Sammelt die Slugs aller aktiven Aktionen aus den Detail-Links (href=/slug)."""
     slugs, seen = [], set()
     for page in range(1, MAX_PAGES + 1):
         html = get(LIST_URL.format(page=page))
-        # tolerant: <slug>_xs.<ext> ODER ohne _xs, beliebige Bildendung
-        found = re.findall(r"/images/\d+/([A-Za-z0-9._-]+?)(?:_xs)?\.(?:png|jpe?g|webp)", html)
-        # Helfer-/Layoutbilder rausfiltern (haben keine reine Slug-Form)
-        found = [s for s in found if "-" in s and "geld-zur" not in s.lower()]
-        new = [s for s in found if s not in seen]
+        hrefs = re.findall(r'href="/([a-z0-9][a-z0-9-]{6,})"', html)
+        deals = [h for h in hrefs
+                 if h not in STOP and not h.endswith(".php") and "tipps" not in h]
+        new = list(dict.fromkeys(h for h in deals if h not in seen))
         if page == 1 and not new:
-            # Diagnose: echte Bild-Pfade und Detail-Link-Kandidaten ausgeben
-            print(f"  DIAGNOSE Seite 1: HTML-Laenge={len(html)} | "
-                  f"'/images/' vorhanden={'/images/' in html} | "
-                  f"'aktionen-top'={'aktionen-top' in html}")
-            imgs = list(dict.fromkeys(re.findall(r"/images/[^\"'\s)>]+", html)))
-            print(f"  --- {len(imgs)} unterschiedliche /images/-Pfade, erste 25:")
-            for u in imgs[:25]:
-                print("     IMG:", u)
-            hrefs = list(dict.fromkeys(re.findall(r'href="(/[a-z0-9][a-z0-9-]{6,})"', html)))
-            print(f"  --- {len(hrefs)} Link-Kandidaten (/slug), erste 20:")
-            for u in hrefs[:20]:
+            print(f"  DIAGNOSE Seite 1: HTML-Laenge={len(html)} | Links gesamt={len(hrefs)}")
+            for u in list(dict.fromkeys(hrefs))[:25]:
                 print("     HREF:", u)
             with open("debug_page1.html", "w", encoding="utf-8") as d:
                 d.write(html)
-            print("  -> debug_page1.html geschrieben.")
         if not new:
             break
         for s in new:
