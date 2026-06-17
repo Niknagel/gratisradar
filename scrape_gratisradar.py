@@ -34,7 +34,12 @@ from bs4 import BeautifulSoup
 
 BASE = "https://geldzurueck.deals"
 LIST_URL = BASE + "/?view=active&sort=newest&page={page}#aktionen-top"
-HEADERS = {"User-Agent": "GratisRadarBot/1.0 (+kontakt@deine-domain.de)"}
+HEADERS = {
+    "User-Agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                   "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"),
+    "Accept-Language": "de-DE,de;q=0.9",
+    "Accept": "text/html,application/xhtml+xml",
+}
 DELAY = 1.5          # Sekunden Pause zwischen Requests (fair bleiben)
 MAX_PAGES = 12       # Sicherheitslimit
 TODAY = date.today()
@@ -94,8 +99,19 @@ def collect_slugs():
     slugs, seen = [], set()
     for page in range(1, MAX_PAGES + 1):
         html = get(LIST_URL.format(page=page))
-        found = re.findall(r"/images/\d+/([a-z0-9-]+)_xs\.png", html)
+        # tolerant: <slug>_xs.<ext> ODER ohne _xs, beliebige Bildendung
+        found = re.findall(r"/images/\d+/([A-Za-z0-9._-]+?)(?:_xs)?\.(?:png|jpe?g|webp)", html)
+        # Helfer-/Layoutbilder rausfiltern (haben keine reine Slug-Form)
+        found = [s for s in found if "-" in s and "geld-zur" not in s.lower()]
         new = [s for s in found if s not in seen]
+        if page == 1 and not new:
+            # Diagnose: warum leer? HTML-Länge + Marker ausgeben + HTML sichern
+            print(f"  DIAGNOSE Seite 1: HTML-Laenge={len(html)} | "
+                  f"'/images/' vorhanden={'/images/' in html} | "
+                  f"'aktionen-top'={'aktionen-top' in html}")
+            with open("debug_page1.html", "w", encoding="utf-8") as d:
+                d.write(html)
+            print("  -> debug_page1.html geschrieben (zum Reinschauen).")
         if not new:
             break
         for s in new:
