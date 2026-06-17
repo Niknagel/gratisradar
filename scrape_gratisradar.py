@@ -105,13 +105,21 @@ def collect_slugs():
         found = [s for s in found if "-" in s and "geld-zur" not in s.lower()]
         new = [s for s in found if s not in seen]
         if page == 1 and not new:
-            # Diagnose: warum leer? HTML-Länge + Marker ausgeben + HTML sichern
+            # Diagnose: echte Bild-Pfade und Detail-Link-Kandidaten ausgeben
             print(f"  DIAGNOSE Seite 1: HTML-Laenge={len(html)} | "
                   f"'/images/' vorhanden={'/images/' in html} | "
                   f"'aktionen-top'={'aktionen-top' in html}")
+            imgs = list(dict.fromkeys(re.findall(r"/images/[^\"'\s)>]+", html)))
+            print(f"  --- {len(imgs)} unterschiedliche /images/-Pfade, erste 25:")
+            for u in imgs[:25]:
+                print("     IMG:", u)
+            hrefs = list(dict.fromkeys(re.findall(r'href="(/[a-z0-9][a-z0-9-]{6,})"', html)))
+            print(f"  --- {len(hrefs)} Link-Kandidaten (/slug), erste 20:")
+            for u in hrefs[:20]:
+                print("     HREF:", u)
             with open("debug_page1.html", "w", encoding="utf-8") as d:
                 d.write(html)
-            print("  -> debug_page1.html geschrieben (zum Reinschauen).")
+            print("  -> debug_page1.html geschrieben.")
         if not new:
             break
         for s in new:
